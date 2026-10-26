@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="300" height="300">
+  <rect width="100" height="100" fill="#111111"/>
+  <g fill="#ffffff">
+    <!-- Part "1" -->
+    <path class="kailen-part-one" d="
+      M 43.5 14
+      L 43.5 74.5
+      L 52.5 74.5
+      L 52.5 86
+      L 24.5 86
+      L 24.5 74.5
+      L 33 74.5
+      L 33 30
+      L 21 39
+      L 21 27
+      L 33 14
+      Z
+    "/>
+    <!-- Part "<" -->
+    <path class="kailen-part-chevron" d="
+      M 48 50
+      L 72.5 14
+      L 85.5 14
+      L 60.5 50
+      L 85.5 86
+      L 72.5 86
+      Z
+    "/>
+  </g>
+</svg>

@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kailen AI</title>
+<link rel="icon" type="image/svg+xml" href="/logo.svg">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css">
+<link rel="stylesheet" href="/style.css">
+<script defer src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.2.6/purify.min.js"></script>
+<script defer src="/app.js"></script>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar glass" id="sidebar">
+    <div class="brand-row"><div class="brand-mark" aria-label="Kailen AI logo"><svg class="kailen-logo" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true"><path class="kailen-part-one" d="M 43 14 L 43 74.5 L 52.5 74.5 L 52.5 86 L 24.5 86 L 24.5 74.5 L 32.5 74.5 L 32.5 30.5 L 21 39 L 21 27.5 L 33 14 Z"/><path class="kailen-part-chevron" d="M 47.5 50 L 71 14 L 84.5 14 L 61 50 L 84.5 86 L 71 86 Z"/></svg></div><div><strong>Kailen AI</strong><small>One workspace. Many models.</small></div><button class="icon-btn mobile-only" id="closeSidebar" aria-label="Close sidebar">×</button></div>
+    <button class="new-chat" id="newChat"><span>＋</span> New chat</button>
+    <nav class="nav-links"><button class="nav-item active" data-view="chat">◫ <span>Workspace</span></button><button class="nav-item" data-view="providers">⌘ <span>Provider hub</span></button><button class="nav-item" data-view="usage">▤ <span>Usage & status</span></button><button class="nav-item" data-view="settings">⚙ <span>Settings</span></button></nav>
+    <div class="sidebar-section"><div class="section-title">RECENT CHATS <button class="icon-btn" id="clearChats" title="Clear local chats">···</button></div><div id="chatList" class="chat-list"><div class="empty-small">Your conversations will appear here.</div></div></div>
+    <div class="sidebar-bottom"><div class="vault-indicator"><span class="status-dot" id="vaultDot"></span><div><strong id="vaultStatusText">Vault locked</strong><small>Local encrypted key vault</small></div></div><button class="nav-item" id="lockVault">↪ <span>Lock vault</span></button></div>
+  </aside>
+  <main class="main-area">
+    <header class="topbar"><button class="icon-btn mobile-only" id="openSidebar" aria-label="Open sidebar">☰</button><div class="crumb"><span class="crumb-dot"></span><span id="topTitle">Unified workspace</span></div><div class="top-actions"><button class="theme-toggle" id="themeToggle"><span id="themeIcon">☀</span><span id="themeLabel">Light mode</span></button><button class="provider-pill" id="topProvider">Connect a provider <span>⌄</span></button><button class="top-logo-btn" id="topLogoBtn" title="Kailen AI Status" aria-label="Kailen AI"><svg class="kailen-logo" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true"><path class="kailen-part-one" d="M 43 14 L 43 74.5 L 52.5 74.5 L 52.5 86 L 24.5 86 L 24.5 74.5 L 32.5 74.5 L 32.5 30.5 L 21 39 L 21 27.5 L 33 14 Z"/><path class="kailen-part-chevron" d="M 47.5 50 L 71 14 L 84.5 14 L 61 50 L 84.5 86 L 71 86 Z"/></svg></button></div></header>
+    <section class="workspace" id="chatView">
+      <div class="welcome" id="welcome"><div class="eyebrow"><span class="eyebrow-line"></span> YOUR AI, YOUR WAY <span class="eyebrow-line"></span></div><h1 id="greetingTitle">Good evening, Chaitanya.</h1><p id="greetingSubtitle">Your AI workspace is ready. Connect a provider or pick up where you left off.</p>
+        <div class="workspace-pulse" aria-label="Workspace summary">
+          <div class="pulse-card"><span class="pulse-icon">⌘</span><div><strong id="homeConnectedStat">0</strong><small>Connected providers</small></div><span class="pulse-dot"></span></div>
+          <div class="pulse-card"><span class="pulse-icon model">◈</span><div><strong id="homeModelStat">18</strong><small>Known model options</small></div><span class="pulse-caption">catalogue</span></div>
+          <div class="pulse-card"><span class="pulse-icon vault">◇</span><div><strong id="homeVaultStat">Locked</strong><small>Encrypted key vault</small></div><span class="pulse-caption" id="homeVaultHint">Local-first</span></div>
+        </div>
+        <div class="quick-grid"><button class="quick-card" data-prompt="Help me write a clear, professional email."><span class="quick-icon violet">✎</span><strong>Write</strong><small>Emails, ideas, content</small><span class="arrow">↗</span></button><button class="quick-card" data-prompt="Help me understand and debug this code."><span class="quick-icon blue">&lt;/&gt;</span><strong>Code</strong><small>Build, debug, explain</small><span class="arrow">↗</span></button><button class="quick-card" data-prompt="Teach me a difficult concept step by step."><span class="quick-icon mint">⌘</span><strong>Learn</strong><small>Understand any topic</small><span class="arrow">↗</span></button><button class="quick-card" data-prompt="Help me brainstorm creative ideas for a project."><span class="quick-icon amber">✧</span><strong>Explore</strong><small>Research, plan, create</small><span class="arrow">↗</span></button></div>
+        <div class="workspace-footnote"><span class="footnote-pulse"></span><span>Private by design</span><i></i><span>Bring your own API keys</span><i></i><span>One workspace, many models</span></div>
+      </div>
+      <div class="messages" id="messages" aria-live="polite"></div>
+      <div class="composer-wrap"><div class="composer glass"><div id="attachmentTray" class="attachment-tray"></div><textarea id="promptInput" rows="1" placeholder="Message Kailen AI…" aria-label="Message Kailen AI"></textarea><div class="composer-bottom"><div class="composer-tools"><label class="tool-btn" for="fileInput" title="Attach files">＋ <span>Attach</span></label><input id="fileInput" type="file" multiple hidden accept=".txt,.md,.csv,.json,.pdf,.docx,.js,.ts,.py,.java,.c,.cpp,.html,.css,.xml,.yaml,.yml,.log"><span class="tool-hint" id="fileHint">Files stay local until you send</span></div><div class="send-tools"><button type="button" class="model-chip-btn" id="selectedModelChip" title="Click to choose or change model">No model selected ⌄</button><button id="sendBtn" class="send-btn" aria-label="Send message">↑</button><button id="stopBtn" class="stop-btn hidden" aria-label="Stop response">■ Stop</button></div></div></div><p class="disclaimer">Responses are generated by your selected provider. Provider API usage may incur charges.</p></div>
+    </section>
+    <section class="content-view hidden" id="providersView"><div class="page-heading"><div><div class="eyebrow left">CONNECTIONS</div><h1>Provider <span>hub</span></h1><p>Bring your own API keys. Keys are encrypted in a local vault on this computer.</p></div><div class="vault-badge" id="providerVaultBadge">Vault locked</div></div><div class="security-note"> <strong>Local-first security</strong><span>Keys are encrypted with AES-256-GCM using a passphrase-derived key and stored in <code>data/provider-vault.enc</code>. The vault must be unlocked to use connected providers.</span></div><div class="neural-layout"><div class="neural-stage glass"><div class="network-head"><strong>Provider constellation</strong><small>Node size = local estimated usage</small></div><svg id="providerNetwork" viewBox="0 0 850 480" role="group" aria-label="Interactive provider network"></svg><p class="network-hint">Select a node to inspect · Connected providers glow</p></div><aside class="neural-inspector glass" id="providerInspector" aria-live="polite"></aside></div><p class="network-disclaimer">Usage is measured locally and estimated from text length, not provider billing records. Costs are estimates only when you enter your own per-million-token rates.</p>
+    <div class="custom-model-section">
+      <div class="section-header-row">
+        <div>
+          <div class="eyebrow left">OPENAI-COMPATIBLE ENDPOINTS</div>
+          <h2>Custom AI Model <span>Connection</span></h2>
+          <p>Connect your own local or remote OpenAI-compatible AI model (Ollama, LM Studio, vLLM, DeepSeek, Groq, Together, Mistral, LocalAI).</p>
+        </div>
+        <button class="primary-btn" id="btnConnectCustomModel"><span>＋</span> Connect Custom Model</button>
+      </div>
+      <div class="custom-model-card glass" id="customModelCard">
+        <div class="custom-card-left">
+          <div class="custom-avatar-mark">↗</div>
+          <div>
+            <h3 id="customCardTitle">Custom OpenAI-Compatible Model</h3>
+            <p id="customCardSubtitle">Not configured yet. Connect a local or cloud endpoint with your desired model name.</p>
+            <div class="custom-tags-row" id="customModelTags">
+              <span class="custom-tag">Endpoint: <strong id="customTagUrl">None</strong></span>
+              <span class="custom-tag">Active Model: <strong id="customTagModel">None</strong></span>
+            </div>
+          </div>
+        </div>
+        <div class="custom-card-actions">
+          <button class="small-btn primary" id="btnEditCustomModel">Configure Model</button>
+          <button class="small-btn danger hidden" id="btnRemoveCustomModel">Remove</button>
+          <button class="small-btn" id="btnSelectCustomModel">Use in Chat</button>
+        </div>
+      </div>
+    </div>
+    <h2>Manage connections</h2><div class="provider-grid" id="providerGrid"></div><div class="provider-footnote">Provider APIs, models, rate limits, and billing are controlled by each provider. A connected key does not imply free access.</div></section>
+    <section class="content-view hidden" id="usageView"><div class="page-heading"><div><div class="eyebrow left">SYSTEM OVERVIEW</div><h1>Usage & <span>status</span></h1><p>A quick overview of your local workspace.</p></div></div><div class="status-grid"><div class="status-card glass"><small>VAULT STATUS</small><strong id="usageVault">Locked</strong><span>Encrypted local file</span></div><div class="status-card glass"><small>CONNECTED PROVIDERS</small><strong id="connectedCount">0</strong><span>Keys stored in vault</span></div><div class="status-card glass"><small>CONVERSATIONS</small><strong id="conversationCount">0</strong><span>Saved in this browser</span></div></div><div class="security-note"><strong>Usage tracking note</strong><span>This version does not yet fetch provider-side billing, token counts, or spend. Those require provider-specific usage APIs and permissions.</span></div></section>
+    <section class="content-view hidden" id="settingsView">
+      <div class="page-heading settings-heading">
+        <div><div class="eyebrow left">PREFERENCES</div><h1>Settings <span>& controls</span></h1><p>Shape Kailen AI around how you work. Preferences are stored locally on this computer.</p></div>
+        <div class="settings-saved"><span class="settings-saved-dot"></span> Saved locally</div>
+      </div>
+      <div class="settings-layout">
+        <div class="settings-main-column">
+          <section class="settings-card glass">
+            <div class="settings-card-heading"><div class="settings-icon appearance-icon">◐</div><div><h2>Appearance</h2><p>Adjust the interface to your environment.</p></div></div>
+            <div class="setting-row"><div class="setting-copy"><strong>Color theme</strong><small>Choose the appearance used throughout the app.</small></div><select id="settingTheme" class="settings-select"><option value="dark">Dark</option><option value="light">Light</option></select></div>
+            <div class="setting-row"><div class="setting-copy"><strong>Accent color</strong><small>Change the highlight color for buttons and active states.</small></div><select id="settingAccent" class="settings-select"><option value="auto">Preset default</option><option value="blue">Blue</option><option value="violet">Violet</option><option value="mint">Mint</option><option value="rose">Rose</option></select></div>
+            <div class="theme-customizer">
+              <div class="customizer-head"><div><strong>Make it yours</strong><small>Live theme customizer. Your choices are saved on this PC.</small></div><button id="settingResetTheme" class="settings-action-btn muted-action" type="button">Reset theme</button></div>
+              <div class="setting-copy theme-presets-label"><strong>Color mood</strong><small>Start with a palette, then fine-tune individual colors.</small></div>
+              <div class="theme-preset-grid" id="themePresetGrid" role="group" aria-label="Theme presets">
+                <button class="theme-preset selected" type="button" data-theme-preset="midnight"><span class="preset-swatch midnight-swatch"><i></i><i></i><i></i></span><strong>Midnight</strong><small>Cool blue</small></button>
+                <button class="theme-preset" type="button" data-theme-preset="graphite"><span class="preset-swatch graphite-swatch"><i></i><i></i><i></i></span><strong>Graphite</strong><small>Neutral</small></button>
+                <button class="theme-preset" type="button" data-theme-preset="aurora"><span class="preset-swatch aurora-swatch"><i></i><i></i><i></i></span><strong>Aurora</strong><small>Teal glow</small></button>
+                <button class="theme-preset" type="button" data-theme-preset="forest"><span class="preset-swatch forest-swatch"><i></i><i></i><i></i></span><strong>Forest</strong><small>Natural</small></button>
+                <button class="theme-preset" type="button" data-theme-preset="amethyst"><span class="preset-swatch amethyst-swatch"><i></i><i></i><i></i></span><strong>Amethyst</strong><small>Violet</small></button>
+                <button class="theme-preset" type="button" data-theme-preset="sand"><span class="preset-swatch sand-swatch"><i></i><i></i><i></i></span><strong>Sand</strong><small>Warm</small></button>
+              </div>
+              <div class="custom-color-grid">
+                <label class="color-field"><span><strong>Custom accent</strong><small>Buttons and highlights</small></span><input id="settingCustomAccent" type="color" value="#6594ff" aria-label="Custom accent color"></label>
+                <label class="color-field"><span><strong>Background</strong><small>Workspace base color</small></span><input id="settingCustomBackground" type="color" value="#0b1020" aria-label="Custom background color"></label>
+              </div>
+              <div class="setting-range-row"><label for="settingSurfaceOpacity"><strong>Surface opacity</strong><small>Lower values feel glassier; higher values feel more solid.</small></label><div class="range-control"><input id="settingSurfaceOpacity" type="range" min="45" max="100" step="1" value="84"><output id="settingSurfaceOpacityValue">84%</output></div></div>
+              <div class="setting-range-row"><label for="settingGlassBlur"><strong>Glass blur</strong><small>Adjust how strongly surfaces soften the background.</small></label><div class="range-control"><input id="settingGlassBlur" type="range" min="0" max="24" step="1" value="10"><output id="settingGlassBlurValue">10 px</output></div></div>
+              <div class="setting-range-row"><label for="settingRoundness"><strong>Corner roundness</strong><small>Choose sharp, balanced, or softer corners.</small></label><div class="range-control"><input id="settingRoundness" type="range" min="8" max="26" step="1" value="16"><output id="settingRoundnessValue">16 px</output></div></div>
+              <div class="setting-range-row"><label for="settingFontScale"><strong>Text size</strong><small>Make the interface text a little smaller or larger.</small></label><div class="range-control"><input id="settingFontScale" type="range" min="90" max="115" step="1" value="100"><output id="settingFontScaleValue">100%</output></div></div>
+              <div class="setting-row settings-glow-row"><div class="setting-copy"><strong>Background glow</strong><small>Toggle the soft ambient color gradients behind the workspace.</small></div><label class="switch-control"><input id="settingBackgroundGlow" type="checkbox" checked><span class="switch-track"></span></label></div>
+            </div>
+            <div class="setting-row"><div class="setting-copy"><strong>Compact layout</strong><small>Reduce padding in panels and conversation lists.</small></div><label class="switch-control"><input id="settingCompact" type="checkbox"><span class="switch-track"></span></label></div>
+            <div class="setting-row"><div class="setting-copy"><strong>Reduce motion</strong><small>Minimize transitions and animated movement.</small></div><label class="switch-control"><input id="settingReduceMotion" type="checkbox"><span class="switch-track"></span></label></div>
+          </section>
+          <section class="settings-card glass">
+            <div class="settings-card-heading"><div class="settings-icon chat-icon">↵</div><div><h2>Chat preferences</h2><p>Control how the composer and workspace behave.</p></div></div>
+            <div class="setting-row"><div class="setting-copy"><strong>Enter to send</strong><small>Press Enter to send; Shift + Enter adds a new line.</small></div><label class="switch-control"><input id="settingEnterToSend" type="checkbox" checked><span class="switch-track"></span></label></div>
+            <div class="setting-row"><div class="setting-copy"><strong>Show workspace overview</strong><small>Show connected providers, model catalogue and vault status on the home screen.</small></div><label class="switch-control"><input id="settingHomeOverview" type="checkbox" checked><span class="switch-track"></span></label></div>
+            <div class="setting-row"><div class="setting-copy"><strong>Confirm before clearing chats</strong><small>Ask before removing locally saved conversations.</small></div><label class="switch-control"><input id="settingConfirmClear" type="checkbox" checked><span class="switch-track"></span></label></div>
+          </section>
+          <section class="settings-card glass">
+            <div class="settings-card-heading"><div class="settings-icon profile-icon">◎</div><div><h2>Personalization</h2><p>Customize the greeting on your main workspace.</p></div></div>
+            <div class="setting-row profile-name-row"><div class="setting-copy"><strong>Display name</strong><small>Used in your time-aware welcome greeting.</small></div><div class="settings-inline-input"><input id="settingDisplayName" type="text" maxlength="60" placeholder="Your name" autocomplete="nickname"><button id="settingSaveName" class="settings-action-btn">Save name</button></div></div>
+          </section>
+        </div>
+        <div class="settings-side-column">
+          <section class="settings-card glass">
+            <div class="settings-card-heading"><div class="settings-icon privacy-icon">◇</div><div><h2>Local data & privacy</h2><p>Your preferences and chat history stay in this local profile.</p></div></div>
+            <div class="settings-data-stat"><span>Saved conversations</span><strong id="settingsConversationCount">0</strong></div>
+            <div class="settings-data-stat"><span>Provider vault</span><strong id="settingsVaultStatus">Locked</strong></div>
+            <button class="settings-wide-btn" id="settingsExportChats">↓ <span>Export conversations</span></button>
+            <button class="settings-wide-btn" id="settingsLockVault">⌑ <span>Lock encrypted vault</span></button>
+            <button class="settings-wide-btn danger-action" id="settingsClearChats">× <span>Clear all conversations</span></button>
+            <button class="settings-wide-btn danger-action" id="settingsClearUsage">↺ <span>Reset local usage estimates</span></button>
+            <p class="settings-footnote">Resetting local usage estimates does not affect provider accounts or invoices. Clearing chats cannot be undone.</p>
+          </section>
+          <section class="settings-card settings-about glass">
+            <div class="settings-card-heading"><div class="settings-icon about-icon" aria-label="Kailen AI logo"><svg class="kailen-logo" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true"><path class="kailen-part-one" d="M 43 14 L 43 74.5 L 52.5 74.5 L 52.5 86 L 24.5 86 L 24.5 74.5 L 32.5 74.5 L 32.5 30.5 L 21 39 L 21 27.5 L 33 14 Z"/><path class="kailen-part-chevron" d="M 47.5 50 L 71 14 L 84.5 14 L 61 50 L 84.5 86 L 71 86 Z"/></svg></div><div><h2>About Kailen AI</h2><p>One workspace. Many models.</p></div></div>
+            <div class="about-pair"><span>Application</span><strong>Kailen AI</strong></div>
+            <div class="about-pair"><span>Build</span><strong>Windows Desktop</strong></div>
+            <div class="about-pair"><span>Key storage</span><strong>Encrypted local vault</strong></div>
+            <div class="about-pair"><span>Billing data</span><strong>Estimates only</strong></div>
+            <p class="settings-footnote">API calls are billed by each provider. Keep your vault passphrase safe.</p>
+          </section>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+<div class="modal-backdrop hidden" id="vaultModal"><div class="modal glass"><div class="modal-mark" aria-label="Kailen AI logo"><svg class="kailen-logo" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true"><path class="kailen-part-one" d="M 43 14 L 43 74.5 L 52.5 74.5 L 52.5 86 L 24.5 86 L 24.5 74.5 L 32.5 74.5 L 32.5 30.5 L 21 39 L 21 27.5 L 33 14 Z"/><path class="kailen-part-chevron" d="M 47.5 50 L 71 14 L 84.5 14 L 61 50 L 84.5 86 L 71 86 Z"/></svg></div><div class="eyebrow">LOCAL SECURITY</div><h2 id="vaultModalTitle">Unlock your vault</h2><p id="vaultModalDescription">Enter your passphrase to decrypt your provider keys on this computer.</p><form id="vaultForm"><label for="vaultPassphrase">Vault passphrase</label><input id="vaultPassphrase" type="password" minlength="10" autocomplete="current-password" required placeholder="At least 10 characters"><small id="vaultPassHelp">Your passphrase is not sent to an external service.</small><div class="modal-error" id="vaultError"></div><button class="primary-btn" id="vaultSubmit" type="submit">Unlock vault <span>→</span></button></form><div class="modal-footer">If you forget this passphrase, the encrypted keys cannot be recovered.</div></div></div>
+<div class="modal-backdrop hidden" id="keyModal"><div class="modal glass"><button class="modal-close" id="closeKeyModal">×</button><div class="modal-mark" id="keyProviderMark">AI</div><div class="eyebrow">PROVIDER CONNECTION</div><h2 id="keyModalTitle">Connect provider</h2><p id="keyModalDescription">Add an API key to use this provider.</p><form id="keyForm">
+  <div id="customModelGroup" class="hidden">
+    <label for="customModelNameInput">Model Name / Identifier <span class="required">*</span></label>
+    <input id="customModelNameInput" type="text" placeholder="e.g. deepseek-chat, llama3.3:70b, mistral-large">
+    <small>The exact model name recognized by your custom endpoint.</small>
+    <label for="customExtraModelsInput">Additional Model IDs <span class="optional">optional</span></label>
+    <input id="customExtraModelsInput" type="text" placeholder="e.g. qwen2.5:32b, phi4, deepseek-r1 (comma-separated)">
+    <small>Comma-separated model names if this endpoint serves multiple models.</small>
+  </div>
+  <label for="baseUrlInput" id="baseUrlLabel">Custom base URL <span class="optional">optional</span></label>
+  <input id="baseUrlInput" type="url" placeholder="https://api.example.com/v1">
+  <small id="baseUrlHelp">Leave blank to use the provider's default endpoint.</small>
+  <label for="apiKeyInput" id="apiKeyLabel">API key <span class="required" id="apiKeyReq">*</span></label>
+  <input id="apiKeyInput" type="password" autocomplete="off" placeholder="Paste API key">
+  <small id="apiKeyHelp">API key is encrypted into your local vault.</small>
+  <div class="modal-error" id="keyError"></div>
+  <button class="primary-btn" id="keySubmitBtn" type="submit">Encrypt & save key <span>→</span></button>
+</form><div class="modal-footer">Only the provider receives your key when you send a request to it.</div></div></div>
+<div class="modal-backdrop hidden" id="modelModal">
+  <div class="modal glass model-modal">
+    <button class="modal-close" id="closeModelModal" type="button" aria-label="Close model selector">×</button>
+    <div class="eyebrow"><span class="crumb-dot"></span> MODEL SELECTOR</div>
+    <h2 id="modelModalTitle">Select AI Model</h2>
+    <p id="modelModalSubtitle">Choose a provider and model for your workspace conversations.</p>
+    
+    <div class="model-provider-tabs" id="modelModalTabs" role="tablist" aria-label="Providers"></div>
+    
+    <div class="model-provider-status" id="modelModalProviderStatus"></div>
+    
+    <div class="model-card-list" id="modelModalList" role="list"></div>
+    
+    <form class="custom-model-bar" id="customModelBar">
+      <label for="customModelInput"><strong>Use another model ID</strong><small>Add any custom, preview, or fine-tuned model identifier for this provider</small></label>
+      <div class="custom-model-input-row">
+        <input id="customModelInput" type="text" placeholder="e.g. gemini-2.0-pro-exp-02-05, o3-mini-high, etc.">
+        <button class="small-btn primary" id="btnApplyCustomModel" type="submit">Activate</button>
+      </div>
+    </form>
+    <div class="modal-footer">
+      <span>Active model: <strong id="modelModalCurrentActive">None</strong></span>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status"></div>
+</body></html>

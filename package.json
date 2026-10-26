@@ -1,0 +1,62 @@
+{
+  "name": "kailen-ai-desktop",
+  "version": "2.8.0",
+  "private": true,
+  "description": "Kailen AI — Windows multi-provider AI workspace with customizable local theme studio",
+  "main": "main.js",
+  "author": "Kailen AI",
+  "scripts": {
+    "start": "electron .",
+    "start:web": "node server.js",
+    "dev": "electron .",
+    "dist:win": "electron-builder --win nsis"
+  },
+  "build": {
+    "appId": "com.kailenai.desktop",
+    "productName": "Kailen AI",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "server.js",
+      "public/**/*",
+      "data/.gitkeep",
+      "package.json",
+      "node_modules/**/*",
+    ".env.example"
+    ],
+    "asar": true,
+    "win": {
+      "icon": "public/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Kailen AI"
+    }
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mammoth": "^1.9.0",
+    "pdf-parse": "^1.1.1"
+  },
+  "devDependencies": {
+    "electron": "^45.0.0",
+    "electron-builder": "^26.0.12"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
