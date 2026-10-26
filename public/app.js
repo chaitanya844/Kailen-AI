@@ -54,12 +54,17 @@ let providerSelectedModels = {
 };
 try {
   const savedMap = JSON.parse(localStorage.getItem('kailen-provider-models') || '{}');
-  providerSelectedModels = { ...providerSelectedModels, ...savedMap };
+  if (savedMap && typeof savedMap === 'object') {
+    providerSelectedModels = { ...providerSelectedModels, ...savedMap };
+  }
 } catch {}
 
 let userAddedModels = {};
 try {
-  userAddedModels = JSON.parse(localStorage.getItem('kailen-user-models') || '{}');
+  const savedUser = JSON.parse(localStorage.getItem('kailen-user-models') || '{}');
+  if (savedUser && typeof savedUser === 'object') {
+    userAddedModels = savedUser;
+  }
 } catch {}
 
 function getModelsForProvider(pId) {
@@ -68,14 +73,31 @@ function getModelsForProvider(pId) {
   return Array.from(new Set([...base, ...userList]));
 }
 
+function saveActiveModelAndProvider(pId, modelName) {
+  if (!pId || !modelName) return;
+  selectedProvider = pId;
+  selectedModel = modelName;
+  providerSelectedModels[pId] = modelName;
+  try {
+    localStorage.setItem('kailen-selected-provider', pId);
+    localStorage.setItem('kailen-selected-model', modelName);
+    localStorage.setItem('kailen-last-used-provider', pId);
+    localStorage.setItem('kailen-last-used-model', modelName);
+    localStorage.setItem('kailen-provider-models', JSON.stringify(providerSelectedModels));
+  } catch {}
+}
+
 let unlocked=false, providerStatuses={}, models=DEFAULT_MODELS, selectedProvider='openai', selectedModel='gpt-4.1-mini', chats=[], activeChat=null, pendingFiles=[], controller=null, activeKeyProvider='openai', activeModalProvider='openai', toastTimer;
 
 try {
-  const savedP = localStorage.getItem('kailen-selected-provider');
-  if (savedP && PROVIDERS[savedP]) selectedProvider = savedP;
-  const savedM = localStorage.getItem('kailen-selected-model');
-  if (savedM) selectedModel = savedM;
-  else if (providerSelectedModels[selectedProvider]) selectedModel = providerSelectedModels[selectedProvider];
+  const lastP = localStorage.getItem('kailen-last-used-provider') || localStorage.getItem('kailen-selected-provider');
+  if (lastP && PROVIDERS[lastP]) {
+    selectedProvider = lastP;
+  }
+  const lastM = localStorage.getItem('kailen-last-used-model') || localStorage.getItem('kailen-selected-model') || providerSelectedModels[selectedProvider];
+  if (lastM && typeof lastM === 'string' && lastM.trim()) {
+    selectedModel = lastM.trim();
+  }
 } catch {}
 function toast(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),2500)}
 function setTheme(theme){document.documentElement.dataset.theme=theme;try{localStorage.setItem('kailen-theme',theme)}catch{} $('themeIcon').textContent=theme==='dark'?'☀':'☾';$('themeLabel').textContent=theme==='dark'?'Light mode':'Dark mode';const themeSelect=$('settingTheme');if(themeSelect)themeSelect.value=theme;}
@@ -328,8 +350,53 @@ function showVaultModal(mode){$('vaultModal').classList.remove('hidden');$('vaul
 async function initVault(){try{const s=await api('/api/vault/status');if(s.exists){showVaultModal('unlock')}else showVaultModal('setup')}catch(e){toast(e.message)}}
 $('vaultForm').addEventListener('submit',async e=>{e.preventDefault();const mode=$('vaultForm').dataset.mode,passphrase=$('vaultPassphrase').value;$('vaultError').textContent='';try{await api(mode==='setup'?'/api/vault/setup':'/api/vault/unlock',{method:'POST',body:JSON.stringify({passphrase})});unlocked=true;$('vaultModal').classList.add('hidden');$('vaultStatusText').textContent='Vault unlocked';$('vaultDot').classList.add('online');$('providerVaultBadge').textContent='Vault unlocked';await refreshProviders();toast(mode==='setup'?'Encrypted vault created':'Vault unlocked')}catch(err){$('vaultError').textContent=err.message}});
 $('lockVault').onclick=async()=>{if(!unlocked)return showVaultModal('unlock');try{await api('/api/vault/lock',{method:'POST'});unlocked=false;providerStatuses={};$('vaultStatusText').textContent='Vault locked';$('vaultDot').classList.remove('online');$('providerVaultBadge').textContent='Vault locked';renderProviders();updateUsage();showVaultModal('unlock');toast('Vault locked')}catch(e){toast(e.message)}};
-async function refreshProviders(){if(!unlocked)return;try{const p=await api('/api/providers');providerStatuses=p.providers;renderProviders();updateUsage();const connected=Object.keys(providerStatuses).find(k=>providerStatuses[k].connected);if(connected&&!providerStatuses[selectedProvider]?.connected){selectedProvider=connected;selectedModel=(models[selectedProvider]||DEFAULT_MODELS[selectedProvider])[0]}updateModelUI()}catch(e){toast(e.message)}}
-async function loadModels(){try{const d=await api('/api/models');models=d.models||DEFAULT_MODELS}catch{models=DEFAULT_MODELS}}
+async function refreshProviders(){
+  if(!unlocked)return;
+  try{
+    const p=await api('/api/providers');
+    providerStatuses=p.providers;
+    renderProviders();
+    updateUsage();
+
+    const lastP = localStorage.getItem('kailen-last-used-provider') || localStorage.getItem('kailen-selected-provider') || selectedProvider;
+    const lastM = localStorage.getItem('kailen-last-used-model') || localStorage.getItem('kailen-selected-model') || selectedModel;
+
+    if (providerStatuses[selectedProvider]?.connected) {
+      if (lastM && lastP === selectedProvider) {
+        selectedModel = lastM;
+      } else if (providerSelectedModels[selectedProvider]) {
+        selectedModel = providerSelectedModels[selectedProvider];
+      }
+    } else {
+      if (lastP && providerStatuses[lastP]?.connected) {
+        selectedProvider = lastP;
+        selectedModel = lastM || providerSelectedModels[lastP] || getModelsForProvider(lastP)[0];
+      } else {
+        const connected=Object.keys(providerStatuses).find(k=>providerStatuses[k].connected);
+        if(connected){
+          selectedProvider=connected;
+          selectedModel=providerSelectedModels[connected] || getModelsForProvider(connected)[0];
+        }
+      }
+    }
+    saveActiveModelAndProvider(selectedProvider, selectedModel);
+    updateModelUI();
+  }catch(e){toast(e.message)}
+}
+async function loadModels(){
+  try{
+    const d=await api('/api/models');
+    models=d.models||DEFAULT_MODELS;
+  }catch{
+    models=DEFAULT_MODELS;
+  }
+  const lastP = localStorage.getItem('kailen-last-used-provider') || localStorage.getItem('kailen-selected-provider');
+  if (lastP && PROVIDERS[lastP]) selectedProvider = lastP;
+  const lastM = localStorage.getItem('kailen-last-used-model') || localStorage.getItem('kailen-selected-model') || providerSelectedModels[selectedProvider];
+  if (lastM && typeof lastM === 'string' && lastM.trim()) selectedModel = lastM.trim();
+  saveActiveModelAndProvider(selectedProvider, selectedModel);
+  updateModelUI();
+}
 function renderCustomModelCard(){
   const customStatus = providerStatuses.custom;
   const isConn = Boolean(customStatus?.connected);
@@ -343,7 +410,7 @@ function renderCustomModelCard(){
   const selBtn = $('btnSelectCustomModel');
 
   if(isConn){
-    const activeModel = customStatus.modelName || models.custom?.[0] || 'default';
+    const activeModel = providerSelectedModels.custom || customStatus.modelName || models.custom?.[0] || 'default';
     if(title) title.textContent = `Custom Model: ${activeModel}`;
     if(sub) sub.textContent = `Connected to ${customStatus.baseUrl || 'custom endpoint'}. Ready to chat.`;
     if(urlTag) urlTag.textContent = customStatus.baseUrl || 'None';
@@ -366,8 +433,8 @@ function renderCustomModelCard(){
   if(rmBtn) rmBtn.onclick = () => removeProvider('custom');
   if(selBtn) selBtn.onclick = () => {
     if(!isConn){ openKeyModal('custom'); return; }
-    selectedProvider = 'custom';
-    selectedModel = (models.custom || [customStatus.modelName || 'default'])[0];
+    const mName = providerSelectedModels.custom || customStatus.modelName || (models.custom || ['default'])[0];
+    saveActiveModelAndProvider('custom', mName);
     updateModelUI();
     showView('chat');
     toast(`Using Custom model: ${selectedModel}`);
@@ -463,8 +530,8 @@ $('keyForm').addEventListener('submit',async e=>{
     $('keyModal').classList.add('hidden');
     await loadModels();
     await refreshProviders();
-    selectedProvider=activeKeyProvider;
-    selectedModel=(models[selectedProvider]||['default'])[0];
+    const newM = payload.modelName || providerSelectedModels[activeKeyProvider] || (models[activeKeyProvider]||['default'])[0];
+    saveActiveModelAndProvider(activeKeyProvider, newM);
     updateModelUI();
     toast(`${PROVIDERS[selectedProvider].name} configured and saved`);
   }catch(err){
@@ -484,14 +551,7 @@ function closeModelModal(){
 }
 
 function selectModelAndProvider(pId, modelName){
-  selectedProvider = pId;
-  selectedModel = modelName;
-  providerSelectedModels[pId] = modelName;
-  try {
-    localStorage.setItem('kailen-selected-provider', selectedProvider);
-    localStorage.setItem('kailen-selected-model', selectedModel);
-    localStorage.setItem('kailen-provider-models', JSON.stringify(providerSelectedModels));
-  } catch {}
+  saveActiveModelAndProvider(pId, modelName);
   updateModelUI();
   renderProviders();
   closeModelModal();
@@ -555,7 +615,8 @@ function renderModelModal(){
     const currentList = getModelsForProvider(activeModalProvider);
     for (const m of currentList) {
       const isSelected = (selectedProvider === activeModalProvider && selectedModel === m);
-      const meta = MODEL_META[m] || { badge: 'Available', desc: `Model option for ${pName}` };
+      const isUserAdded = (userAddedModels[activeModalProvider] || []).includes(m);
+      const meta = MODEL_META[m] || { badge: isUserAdded ? 'Custom' : 'Available', desc: isUserAdded ? 'User-added custom model identifier' : `Model option for ${pName}` };
       const card = document.createElement('div');
       card.className = `model-card-item ${isSelected ? 'selected' : ''}`;
       card.setAttribute('role', 'button');
@@ -615,6 +676,8 @@ if (customModelForm) {
       } catch {}
     }
     selectModelAndProvider(activeModalProvider, val);
+    renderModelModal();
+    toast(`Model "${val}" saved and selected as active`);
   });
 }
 
@@ -687,4 +750,4 @@ function renderNeuralHub(){const svg=$('providerNetwork');if(!svg)return;svg.rep
  for(let i=0;i<ids.length;i++)for(let j=i+1;j<ids.length;j++){const a=NEURAL_POS[ids[i]],b=NEURAL_POS[ids[j]];svg.append(svgEl('line',{x1:a[0],y1:a[1],x2:b[0],y2:b[1],class:'neural-link'}))}
  for(const id of ids){const p=PROVIDERS[id],x=NEURAL_POS[id],n=data[id]||{},connected=Boolean(providerStatuses[id]?.connected),size=33+38*Math.sqrt(((n.inputTokens||0)+(n.outputTokens||0))/max),color=NEURAL_COLORS[id];const g=svgEl('g',{class:'neural-node'+(neuralSelected===id?' selected':''),role:'button',tabindex:'0','aria-label':p.name+' provider details'});g.append(svgEl('circle',{cx:x[0],cy:x[1],r:size+13,fill:color,opacity:connected?'.16':'.045',filter:'url(#neuralGlow)'}));g.append(svgEl('circle',{cx:x[0],cy:x[1],r:size+7,fill:'none',stroke:color,'stroke-opacity':neuralSelected===id?'1':'.24',class:'node-halo'}));g.append(svgEl('circle',{cx:x[0],cy:x[1],r:size,fill:connected?color:'#28334b','fill-opacity':connected?'.26':'.65',stroke:color,'stroke-opacity':connected?'1':'.4','stroke-width':'2',class:'node-core'}));const symbol=svgEl('text',{x:x[0],y:x[1],class:'node-symbol'});symbol.textContent=p.mark;g.append(symbol);const label=svgEl('text',{x:x[0],y:x[1]+size+25,class:'node-label'});label.textContent=p.name;g.append(label);const usage=svgEl('text',{x:x[0],y:x[1]+size+41,class:'node-usage'});usage.textContent=(n.calls||0)+' calls';g.append(usage);g.addEventListener('click',()=>{neuralSelected=id;renderNeuralHub()});g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();neuralSelected=id;renderNeuralHub()}});svg.append(g)}renderNeuralInspector()}
 function renderNeuralInspector(){const root=$('providerInspector');if(!root)return;const id=neuralSelected,p=PROVIDERS[id],n=getNeuralData()[id]||{},connected=Boolean(providerStatuses[id]?.connected);root.replaceChildren();root.innerHTML=`<div class="inspector-eyebrow">PROVIDER INTELLIGENCE</div><h2>${escapeHTML(p.name)}</h2><div style="font-size:12px;opacity:.7">${connected?'● Connected':'○ Not connected'} · ${escapeHTML(p.desc)}</div><div class="inspector-stats"><div class="inspector-stat"><small>REQUESTS</small><strong>${n.calls||0}</strong></div><div class="inspector-stat"><small>ESTIMATED SPEND</small><strong>${neuralMoney(neuralCost(n))}</strong></div><div class="inspector-stat"><small>INPUT TOKENS ≈</small><strong>${(n.inputTokens||0).toLocaleString()}</strong></div><div class="inspector-stat"><small>OUTPUT TOKENS ≈</small><strong>${(n.outputTokens||0).toLocaleString()}</strong></div></div><div class="inspector-section"><h3>Model activity</h3><div>${Object.entries(n.models||{}).map(([m,v])=>'<div class="inspector-model">'+escapeHTML(m)+' · '+v+' calls</div>').join('')||'<p>No locally recorded requests yet.</p>'}</div></div><div class="inspector-section"><h3>Estimated pricing (USD per 1M tokens)</h3><div class="inspector-rate"><label>Input rate<input id="neuralInputRate" type="number" min="0" step="0.01" value="${n.rates?.input||0}"></label><label>Output rate<input id="neuralOutputRate" type="number" min="0" step="0.01" value="${n.rates?.output||0}"></label></div><p>Set your own rates; different models may have different prices. This is not an invoice, remaining balance or official billing.</p></div><div class="inspector-section"><h3>Provider billing</h3><p>Open the provider's billing dashboard to verify actual charges. Kailen AI cannot currently fetch account balances or invoices.</p></div><div class="inspector-actions"><button id="neuralConnect">${connected?'Replace API key':'Connect API key'}</button><button id="neuralSelect">Use provider</button><button id="neuralClear">Reset local usage</button></div>`;
- root.querySelectorAll('#neuralInputRate,#neuralOutputRate').forEach(input=>input.addEventListener('change',()=>{const all=getNeuralData(),x=all[id]||{calls:0,inputTokens:0,outputTokens:0,models:{}};x.rates={input:Math.max(0,Number($('neuralInputRate').value)||0),output:Math.max(0,Number($('neuralOutputRate').value)||0)};all[id]=x;setNeuralData(all);renderNeuralInspector()}));$('neuralConnect').onclick=()=>openKeyModal(id);$('neuralSelect').onclick=()=>{if(!connected){toast('Connect this provider first');return}selectedProvider=id;selectedModel=(models[id]||DEFAULT_MODELS[id])[0];updateModelUI();showView('chat')};$('neuralClear').onclick=()=>{if(!confirm('Clear locally estimated usage for '+p.name+'?'))return;const all=getNeuralData();delete all[id];setNeuralData(all);renderNeuralHub()}}
+ root.querySelectorAll('#neuralInputRate,#neuralOutputRate').forEach(input=>input.addEventListener('change',()=>{const all=getNeuralData(),x=all[id]||{calls:0,inputTokens:0,outputTokens:0,models:{}};x.rates={input:Math.max(0,Number($('neuralInputRate').value)||0),output:Math.max(0,Number($('neuralOutputRate').value)||0)};all[id]=x;setNeuralData(all);renderNeuralInspector()}));$('neuralConnect').onclick=()=>openKeyModal(id);$('neuralSelect').onclick=()=>{if(!connected){toast('Connect this provider first');return}const mName=providerSelectedModels[id]||(models[id]||DEFAULT_MODELS[id])[0];saveActiveModelAndProvider(id,mName);updateModelUI();showView('chat')};$('neuralClear').onclick=()=>{if(!confirm('Clear locally estimated usage for '+p.name+'?'))return;const all=getNeuralData();delete all[id];setNeuralData(all);renderNeuralHub()}}

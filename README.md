@@ -11,13 +11,13 @@
   [![Node Version](https://img.shields.io/badge/Node.js-20%20LTS-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
   [![Encryption](https://img.shields.io/badge/Security-AES--256--GCM%20%2B%20Scrypt-8A2BE2?style=for-the-badge&logo=lock&logoColor=white)](https://nodejs.org/api/crypto.html)
   [![Architecture](https://img.shields.io/badge/Architecture-Local--First%20Loopback-00C7B7?style=for-the-badge)](https://github.com)
-  [![Release](https://img.shields.io/badge/Release-v2.8.0-orange?style=for-the-badge)](https://github.com/chaitanya844/Kailen-AI/releases)
+  [![Release](https://img.shields.io/badge/Release-v2.9.0-orange?style=for-the-badge)](https://github.com/chaitanya844/Kailen-AI/releases)
   [![GitHub Packages](https://img.shields.io/badge/Package-@chaitanya844/kailen--ai--desktop-2088FF?style=for-the-badge&logo=github&logoColor=white)](https://github.com/chaitanya844/Kailen-AI/pkgs/npm/kailen-ai-desktop)
 
   <br/><br/>
 
-  <a href="https://github.com/chaitanya844/Kailen-AI/releases/download/v2.8.0/Kailen.AI.Setup.2.8.0.exe">
-    <img src="https://img.shields.io/badge/⬇️_Download_Windows_Installer-v2.8.0_Setup_(.exe)-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Download Kailen AI Setup 2.8.0 .exe" height="42" />
+  <a href="https://github.com/chaitanya844/Kailen-AI/releases/download/v2.9.0/Kailen.AI.Setup.2.9.0.exe">
+    <img src="https://img.shields.io/badge/⬇️_Download_Windows_Installer-v2.9.0_Setup_(.exe)-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Download Kailen AI Setup 2.9.0 .exe" height="42" />
   </a>
   <a href="#-installation--packages">
     <img src="https://img.shields.io/badge/📦_Package_Install_Options-WinGet_%7C_NPM-107C41?style=for-the-badge" alt="Package Options" height="42" />
@@ -360,10 +360,10 @@ The **Provider Hub** features an interactive vector-based SVG constellation grap
 
 ### Option 1: Direct Windows Installer (.exe)
 
-Download the pre-compiled native Windows installer from the [GitHub Releases](https://github.com/chaitanya844/Kailen-AI/releases/tag/v2.8.0):
-- **Installer**: [`Kailen.AI.Setup.2.8.0.exe`](https://github.com/chaitanya844/Kailen-AI/releases/download/v2.8.0/Kailen.AI.Setup.2.8.0.exe) (~127 MB)
+Download the pre-compiled native Windows installer from the [GitHub Releases](https://github.com/chaitanya844/Kailen-AI/releases/tag/v2.9.0):
+- **Installer**: [`Kailen.AI.Setup.2.9.0.exe`](https://github.com/chaitanya844/Kailen-AI/releases/download/v2.9.0/Kailen.AI.Setup.2.9.0.exe) (~127 MB)
 - **Architecture**: Windows x64 (NSIS setup wizard with desktop shortcut & start menu entries)
-- **SHA-256 Checksum**: `5C7B649650D6076DE11B17590650DF84982C0775015303A3BBA5AB7322AC3DA2`
+- **SHA-256 Checksum**: `B0066C07426EF79F0D24387898834605AE3EBC585F569FB9DE9B1953CCEDA6AF`
 
 ---
 
@@ -433,7 +433,7 @@ npm run dist:win
 
 The resulting setup executable is generated at:
 ```
-dist/Kailen AI Setup 2.8.0.exe
+dist/Kailen AI Setup 2.9.0.exe
 ```
 
 ---
@@ -461,7 +461,7 @@ kailen-ai/
 │   ├── .gitkeep
 │   └── provider-vault.enc           # AES-256-GCM encrypted provider credentials
 ├── dist/                            # Packaged Windows executables and installers
-│   └── Kailen AI Setup 2.8.0.exe    # Compiled NSIS setup installer
+│   └── Kailen AI Setup 2.9.0.exe    # Compiled NSIS setup installer
 ├── public/                          # Frontend presentation layer
 │   ├── app.js                       # Client controller, model switcher, and UI logic
 │   ├── index.html                   # Semantic HTML5 layout & modal templates
