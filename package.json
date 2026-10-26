@@ -1,9 +1,15 @@
 {
-  "name": "kailen-ai-desktop",
+  "name": "@chaitanya844/kailen-ai-desktop",
   "version": "2.8.0",
-  "private": true,
   "description": "Kailen AI — Windows multi-provider AI workspace with customizable local theme studio",
   "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chaitanya844/Kailen-AI.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "author": "Kailen AI",
   "scripts": {
     "start": "electron .",

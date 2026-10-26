@@ -12,6 +12,18 @@
   [![Encryption](https://img.shields.io/badge/Security-AES--256--GCM%20%2B%20Scrypt-8A2BE2?style=for-the-badge&logo=lock&logoColor=white)](https://nodejs.org/api/crypto.html)
   [![Architecture](https://img.shields.io/badge/Architecture-Local--First%20Loopback-00C7B7?style=for-the-badge)](https://github.com)
   [![Release](https://img.shields.io/badge/Release-v2.8.0-orange?style=for-the-badge)](https://github.com/chaitanya844/Kailen-AI/releases)
+  [![GitHub Packages](https://img.shields.io/badge/Package-@chaitanya844/kailen--ai--desktop-2088FF?style=for-the-badge&logo=github&logoColor=white)](https://github.com/chaitanya844/Kailen-AI/pkgs/npm/kailen-ai-desktop)
+
+  <br/><br/>
+
+  <a href="https://github.com/chaitanya844/Kailen-AI/releases/download/v2.8.0/Kailen.AI.Setup.2.8.0.exe">
+    <img src="https://img.shields.io/badge/⬇️_Download_Windows_Installer-v2.8.0_Setup_(.exe)-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Download Kailen AI Setup 2.8.0 .exe" height="42" />
+  </a>
+  <a href="#-installation--packages">
+    <img src="https://img.shields.io/badge/📦_Package_Install_Options-WinGet_%7C_NPM-107C41?style=for-the-badge" alt="Package Options" height="42" />
+  </a>
+
+  <br/><br/>
 
   <p align="center">
     <em>One high-performance desktop workspace for every frontier AI model. Bring your own keys, keep them encrypted locally, and switch models with a single click.</em>
@@ -344,17 +356,48 @@ The **Provider Hub** features an interactive vector-based SVG constellation grap
 
 ---
 
-## 📦 Getting Started
+## 📦 Installation & Packages
+
+### Option 1: Direct Windows Installer (.exe)
+
+Download the pre-compiled native Windows installer from the [GitHub Releases](https://github.com/chaitanya844/Kailen-AI/releases/tag/v2.8.0):
+- **Installer**: [`Kailen.AI.Setup.2.8.0.exe`](https://github.com/chaitanya844/Kailen-AI/releases/download/v2.8.0/Kailen.AI.Setup.2.8.0.exe) (~127 MB)
+- **Architecture**: Windows x64 (NSIS setup wizard with desktop shortcut & start menu entries)
+- **SHA-256 Checksum**: `5C7B649650D6076DE11B17590650DF84982C0775015303A3BBA5AB7322AC3DA2`
+
+---
+
+### Option 2: Windows Package Manager (WinGet)
+
+Install directly via the WinGet manifest included in this repository:
+
+```powershell
+winget install --manifest manifests/chaitanya844.KailenAI.yaml
+```
+
+---
+
+### Option 3: GitHub Packages (npm registry)
+
+Install the application package directly from GitHub Packages:
+
+```powershell
+# Configure npm to use GitHub Packages for @chaitanya844
+npm config set @chaitanya844:registry https://npm.pkg.github.com
+
+# Install package
+npm install -g @chaitanya844/kailen-ai-desktop
+```
+
+---
+
+### Option 4: Running from Source
 
 ### Prerequisites
 
 - **Operating System**: Windows 10 or Windows 11 (64-bit).
 - **Node.js**: Version `20.x LTS` or higher ([Download Node.js](https://nodejs.org/)).
 - **Git**: Installed for cloning the repository.
-
----
-
-### Running from Source
 
 ```powershell
 # 1. Clone the repository

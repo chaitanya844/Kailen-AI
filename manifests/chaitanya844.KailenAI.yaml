@@ -1,0 +1,25 @@
+PackageIdentifier: chaitanya844.KailenAI
+PackageVersion: 2.8.0
+PackageName: Kailen AI
+Publisher: Kailen AI
+Author: Chaitanya Raj
+License: MIT
+LicenseUrl: https://github.com/chaitanya844/Kailen-AI/blob/main/LICENSE
+ShortDescription: Unified Multi-Provider AI Workspace & Local-First Neural Hub for Windows
+Description: Kailen AI is an enterprise-grade, local-first Windows desktop client for interacting with multiple AI providers (Gemini, Claude, OpenAI, OpenRouter, and local models) with AES-256-GCM local encrypted vault storage.
+Moniker: kailen-ai
+Tags:
+  - ai
+  - llm
+  - gemini
+  - claude
+  - openai
+  - desktop
+  - windows
+Installers:
+  - Architecture: x64
+    InstallerType: nullsoft
+    InstallerUrl: https://github.com/chaitanya844/Kailen-AI/releases/download/v2.8.0/Kailen.AI.Setup.2.8.0.exe
+    InstallerSha256: 5C7B649650D6076DE11B17590650DF84982C0775015303A3BBA5AB7322AC3DA2
+ManifestType: singleton
+ManifestVersion: 1.6.0
